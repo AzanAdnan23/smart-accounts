@@ -5,7 +5,7 @@ const FACTORY_NOUNCE = 1;
 
 const FACTORY_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
-const EP_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const EP_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 async function main() {
   const [signer0] = await hre.ethers.getSigners();
@@ -32,15 +32,17 @@ async function main() {
   //and rest is going to be the init calldata thats going to sent over to smart acc factory
 
   // call data in this is the call data of the transection. this is the call data staring from the smart account on. what do u wana do with the smart account
-  const initCode =
-    FACTORY_ADDRESS +
-    AccountFactory.interface
-      .encodeFunctionData("createAccount", [signer0Address])
-      .slice(2);
+  const initCode = "0x";
+  // FACTORY_ADDRESS +
+  // AccountFactory.interface
+  //   .encodeFunctionData("createAccount", [signer0Address])
+  //   .slice(2);
 
-  await entryPoint.depositTo(sender, {
-    value: hre.ethers.parseEther("100"),
-  });
+  console.log("Sender: ", sender);
+
+  // await entryPoint.depositTo(sender, {
+  //   value: hre.ethers.parseEther("100"),
+  // });
 
   const Account = await hre.ethers.getContractFactory("Account");
 
@@ -59,8 +61,8 @@ async function main() {
   };
 
   const tx = entryPoint.handleOps([userOp], signer0Address);
-  const recipt = await tx.wait();
-  console.log("Recipt: ", recipt);
+  // const recipt = await tx.wait();
+  // console.log("Recipt: ", recipt);
 }
 
 main().catch((error) => {

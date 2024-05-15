@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const af = await hre.ethers.deployContract("EntryPoint");
+  const af = await hre.ethers.deployContract("AccountFactory");
 
   await af.waitForDeployment();
 
