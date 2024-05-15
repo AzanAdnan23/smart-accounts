@@ -1,13 +1,3 @@
-# Sample Hardhat Project
+# ERC-4337: A dive into Account Abstraction
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
+This project explores ERC-4337, a revolutionary standard for Ethereum that unlocks the power of smart contract wallets. By ditching private keys and leveraging smart contracts, ERC-4337 promises a smoother, more secure user experience for interacting with DeFi and beyond.
