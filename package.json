@@ -10,9 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "hardhat": "^2.22.4"
+    "@account-abstraction/contracts": "^0.6.0",
+    "@openzeppelin/contracts": "^4.2.0",
+    "dotenv": "^16.4.1",
+    "hardhat": "^2.19.4"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0"
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0"
   }
 }
