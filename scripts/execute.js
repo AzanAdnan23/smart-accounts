@@ -34,17 +34,17 @@ async function main() {
   //and rest is going to be the init calldata thats going to sent over to smart acc factory
 
   // call data in this is the call data of the transection. this is the call data staring from the smart account on. what do u wana do with the smart account
-  const initCode = //"0x";
-    FACTORY_ADDRESS +
-    AccountFactory.interface
-      .encodeFunctionData("createAccount", [signer0Address])
-      .slice(2);
+  const initCode = "0x";
+  // FACTORY_ADDRESS +
+  // AccountFactory.interface
+  //   .encodeFunctionData("createAccount", [signer0Address])
+  //   .slice(2);
 
   console.log("Sender: ", { sender });
 
-  await entryPoint.depositTo(PM_ADDRESS, {
-    value: hre.ethers.parseEther("100"),
-  });
+  // await entryPoint.depositTo(PM_ADDRESS, {
+  //   value: hre.ethers.parseEther("100"),
+  // });
 
   const Account = await hre.ethers.getContractFactory("Account");
 
@@ -53,13 +53,13 @@ async function main() {
     nonce: await entryPoint.getNonce(sender, 0),
     initCode,
     callData: Account.interface.encodeFunctionData("execute"),
-    callGasLimit: 200_000,
-    verificationGasLimit: 200_000,
-    preVerificationGas: 50_000,
+    callGasLimit: 400_000,
+    verificationGasLimit: 400_000,
+    preVerificationGas: 100_000,
     maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
     maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
     paymasterAndData: PM_ADDRESS,
-    signature: "0x",
+    signature: signer0.signMessage(hre.ethers.getBytes(hre.ethers.id("wee"))),
   };
 
   const tx = entryPoint.handleOps([userOp], signer0Address);
