@@ -25,7 +25,19 @@ contract Paymaster is IPaymaster {
     function validatePaymasterUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 maxCost)
         external
         returns (bytes memory context, uint256 validationData)
-    {}
+    {
+        //for produnction
+        // in userop : userOp.PaymasterAndData : it includes first 20 bytes of the paymaster address
+        //and the rest is the data that decides by the payumaster : usually have two things:
+        // 1. TimerPeriod which the user operation is valid . the paymaster is willing to pay for this userop
+        // 2. Signature: the paymaster sighning with his private key that it is willing to pay for thus userop
+        // this paymaster address is later used to call userOperation to call this validaeUserOp against the paymaster
+
+        //paymaster can be a smart conrtract and a paymaster server
+
+        context = new bytes(0);
+        validationData = 0;
+    }
 
     /**
      * post-operation handler.
