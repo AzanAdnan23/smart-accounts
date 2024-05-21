@@ -3,9 +3,11 @@ const hre = require("hardhat");
 // smart contract nounce now start at 1 after spirious dragon upgrade
 const FACTORY_NOUNCE = 1;
 
-const FACTORY_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-const EP_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const EP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
+const PM_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
 async function main() {
   const [signer0] = await hre.ethers.getSigners();
@@ -32,17 +34,17 @@ async function main() {
   //and rest is going to be the init calldata thats going to sent over to smart acc factory
 
   // call data in this is the call data of the transection. this is the call data staring from the smart account on. what do u wana do with the smart account
-  const initCode = "0x";
-  // FACTORY_ADDRESS +
-  // AccountFactory.interface
-  //   .encodeFunctionData("createAccount", [signer0Address])
-  //   .slice(2);
+  const initCode = //"0x";
+    FACTORY_ADDRESS +
+    AccountFactory.interface
+      .encodeFunctionData("createAccount", [signer0Address])
+      .slice(2);
 
-  console.log("Sender: ", sender);
+  console.log("Sender: ", { sender });
 
-  // await entryPoint.depositTo(sender, {
-  //   value: hre.ethers.parseEther("100"),
-  // });
+  await entryPoint.depositTo(PM_ADDRESS, {
+    value: hre.ethers.parseEther("100"),
+  });
 
   const Account = await hre.ethers.getContractFactory("Account");
 
@@ -56,7 +58,7 @@ async function main() {
     preVerificationGas: 50_000,
     maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
     maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
-    paymasterAndData: "0x",
+    paymasterAndData: PM_ADDRESS,
     signature: "0x",
   };
 
