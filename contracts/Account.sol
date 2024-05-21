@@ -14,6 +14,7 @@ contract Account is IAccount {
 
     function validateUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
         external
+        pure
         returns (uint256 validationData)
     {
         return 0;
