@@ -54,32 +54,28 @@ async function main() {
 
   console.log("Sender: ", sender);
 
-  // await entryPoint.depositTo(PM_ADDRESS, {
-  //   value: hre.ethers.parseEther("100"),
-  // });
+  const Account = await hre.ethers.getContractFactory("Account");
 
-  // const Account = await hre.ethers.getContractFactory("Account");
+  const userOp = {
+    sender,
+    nonce: await entryPoint.getNonce(sender, 0),
+    initCode,
+    callData: Account.interface.encodeFunctionData("execute"),
+    callGasLimit: 400_000,
+    verificationGasLimit: 400_000,
+    preVerificationGas: 100_000,
+    maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
+    maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
+    paymasterAndData: PM_ADDRESS,
+    signature: "0x",
+  };
 
-  // const userOp = {
-  //   sender,
-  //   nonce: await entryPoint.getNonce(sender, 0),
-  //   initCode,
-  //   callData: Account.interface.encodeFunctionData("execute"),
-  //   callGasLimit: 400_000,
-  //   verificationGasLimit: 400_000,
-  //   preVerificationGas: 100_000,
-  //   maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
-  //   maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
-  //   paymasterAndData: PM_ADDRESS,
-  //   signature: "0x",
-  // };
+  const userOpHash = await entryPoint.getUserOpHash(userOp);
+  userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
 
-  // const userOpHash = await entryPoint.getUserOpHash(userOp);
-  // userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
-
-  // const tx = entryPoint.handleOps([userOp], signer0Address);
-  // // const recipt = await tx.wait();
-  // // console.log("Recipt: ", recipt);
+  const tx = entryPoint.handleOps([userOp], signer0Address);
+  // const recipt = await tx.wait();
+  // console.log("Recipt: ", recipt);
 }
 
 main().catch((error) => {
