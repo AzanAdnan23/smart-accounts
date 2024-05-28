@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 import "@account-abstraction/contracts/core/EntryPoint.sol";
 import "@account-abstraction/contracts/interfaces/IAccount.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 
 contract Account is IAccount {
     uint256 public s_counter;
@@ -31,8 +32,16 @@ contract AccountFactory {
     event AccountCreated(address account);
 
     function createAccount(address owner) external returns (address) {
-        Account account = new Account(owner);
+        // we are doing this cuz CREATE opcode is forbidden in erc4337
+        bytes32 salt = bytes32(uint256(uint160(owner)));
+        bytes memory bytecode = abi.encodePacked(type(Account).creationCode, abi.encode(owner));
 
-        return address(account);
+        address addr = Create2.computeAddress(salt, keccak256(bytecode));
+
+        if (addr.code.length > 0) {
+            return addr;
+        }
+
+        return Create2.deploy(0, salt, bytecode);
     }
 }
