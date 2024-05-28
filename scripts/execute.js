@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 // smart contract nounce now start at 1 after spirious dragon upgrade
-const FACTORY_NOUNCE = 1;
+//const FACTORY_NOUNCE = 1;
 
 const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
@@ -20,10 +20,11 @@ async function main() {
   // so we have to calculate it here
 
   // sender address in this case is the acc factory. who is deploying the contract
-  const sender = hre.ethers.getCreateAddress({
-    from: FACTORY_ADDRESS,
-    nonce: FACTORY_NOUNCE,
-  });
+  // WE DONT NEED THIS CUZ NOW WE ARE USING getSenderAddress from entry point
+  // const sender = hre.ethers.getCreateAddress({
+  //   from: FACTORY_ADDRESS,
+  //   nonce: FACTORY_NOUNCE,
+  // });
 
   const AccountFactory = await hre.ethers.getContractFactory("AccountFactory");
 
@@ -34,40 +35,51 @@ async function main() {
   //and rest is going to be the init calldata thats going to sent over to smart acc factory
 
   // call data in this is the call data of the transection. this is the call data staring from the smart account on. what do u wana do with the smart account
-  const initCode = //"0x";
+  let initCode =
     FACTORY_ADDRESS +
     AccountFactory.interface
       .encodeFunctionData("createAccount", [signer0Address])
       .slice(2);
+  let sender;
+  try {
+    await entryPoint.getSenderAddress(initCode);
+  } catch (ex) {
+    sender = "0x" + ex.data.data.slice(-40);
+  }
 
-  console.log("Sender: ", { sender });
+  const code = await ethers.provider.getCode(sender);
+  if (code !== "0x") {
+    initCode = "0x";
+  }
 
-  await entryPoint.depositTo(PM_ADDRESS, {
-    value: hre.ethers.parseEther("100"),
-  });
+  console.log("Sender: ", sender);
 
-  const Account = await hre.ethers.getContractFactory("Account");
+  // await entryPoint.depositTo(PM_ADDRESS, {
+  //   value: hre.ethers.parseEther("100"),
+  // });
 
-  const userOp = {
-    sender,
-    nonce: await entryPoint.getNonce(sender, 0),
-    initCode,
-    callData: Account.interface.encodeFunctionData("execute"),
-    callGasLimit: 400_000,
-    verificationGasLimit: 400_000,
-    preVerificationGas: 100_000,
-    maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
-    maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
-    paymasterAndData: PM_ADDRESS,
-    signature: "0x",
-  };
+  // const Account = await hre.ethers.getContractFactory("Account");
 
-  const userOpHash = await entryPoint.getUserOpHash(userOp);
-  userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
+  // const userOp = {
+  //   sender,
+  //   nonce: await entryPoint.getNonce(sender, 0),
+  //   initCode,
+  //   callData: Account.interface.encodeFunctionData("execute"),
+  //   callGasLimit: 400_000,
+  //   verificationGasLimit: 400_000,
+  //   preVerificationGas: 100_000,
+  //   maxFeePerGas: hre.ethers.parseUnits("10", "gwei"),
+  //   maxPriorityFeePerGas: hre.ethers.parseUnits("5", "gwei"),
+  //   paymasterAndData: PM_ADDRESS,
+  //   signature: "0x",
+  // };
 
-  const tx = entryPoint.handleOps([userOp], signer0Address);
-  // const recipt = await tx.wait();
-  // console.log("Recipt: ", recipt);
+  // const userOpHash = await entryPoint.getUserOpHash(userOp);
+  // userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
+
+  // const tx = entryPoint.handleOps([userOp], signer0Address);
+  // // const recipt = await tx.wait();
+  // // console.log("Recipt: ", recipt);
 }
 
 main().catch((error) => {
