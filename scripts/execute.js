@@ -65,11 +65,23 @@ async function main() {
     signature:
       "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
   };
-  const response = ethers.provider.send(
-    "eth_estimateUserOperationGas",
-    [EP_ADDRESS],
-    userOp
+  const { preVerificationGas, verificationGasLimit, callGasLimit } =
+    await ethers.provider.send("eth_estimateUserOperationGas", [
+      userOp,
+      EP_ADDRESS,
+    ]);
+
+  userOp.preVerificationGas = preVerificationGas;
+  userOp.verificationGasLimit = verificationGasLimit;
+  userOp.callGasLimit = callGasLimit;
+
+  const { maxFeePerGas } = await ethers.provider.getFeeData();
+  userOp.maxFeePerGas = "0x" + maxFeePerGas.toString(16);
+
+  const maxPriorityFeePerGas = await ethers.provider.send(
+    "rundler_maxPriorityFeePerGas"
   );
+  userOp.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
   const userOpHash = await entryPoint.getUserOpHash(userOp);
   userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
