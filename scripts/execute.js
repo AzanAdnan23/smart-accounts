@@ -3,7 +3,7 @@ const hre = require("hardhat");
 // smart contract nounce now start at 1 after spirious dragon upgrade
 //const FACTORY_NOUNCE = 1;
 
-const FACTORY_ADDRESS = "0x52610C4920cA31a5DB6a9018228c49E4ec0730ef";
+const FACTORY_ADDRESS = "0x179B76d0939E3C88180026059794c2De5a38aaEA";
 
 const EP_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 
@@ -86,9 +86,19 @@ async function main() {
   const userOpHash = await entryPoint.getUserOpHash(userOp);
   userOp.signature = await signer0.signMessage(hre.ethers.getBytes(userOpHash));
 
-  const tx = entryPoint.handleOps([userOp], signer0Address);
-  // const recipt = await tx.wait();
-  // console.log("Recipt: ", recipt);
+  const opHash = await ethers.provider.send("eth_sendUserOperation", [
+    userOp,
+    EP_ADDRESS,
+  ]);
+
+  setTimeout(async () => {
+    const { transactionHash } = await ethers.provider.send(
+      "eth_getUserOperationByHash",
+      [opHash]
+    );
+
+    console.log(transactionHash);
+  }, 5000);
 }
 
 main().catch((error) => {

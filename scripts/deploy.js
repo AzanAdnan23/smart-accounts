@@ -7,11 +7,11 @@ async function main() {
 
   console.log(`AF deployed to ${af.target}`);
 
-  const pm = await hre.ethers.deployContract("Paymaster");
+  // const pm = await hre.ethers.deployContract("Paymaster");
 
-  await pm.waitForDeployment();
+  // await pm.waitForDeployment();
 
-  console.log(`PM deployed to ${pm.target}`);
+  // console.log(`PM deployed to ${pm.target}`);
 }
 
 main().catch((error) => {
